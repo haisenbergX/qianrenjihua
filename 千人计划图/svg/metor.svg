@@ -1,0 +1,19 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg viewBox="-50 -30 150 60" xmlns="http://www.w3.org/2000/svg" version="1.1" width="100" height="60" id="svg">
+    <filter id="filter" x="-200%" y="-200%" width="400%" height="400%">
+        <feGaussianBlur result="blur" stdDeviation="1">
+        </feGaussianBlur>
+    </filter >
+
+    <defs>
+        <linearGradient id="gradient" >
+            <stop offset="0%" stop-color="#04a"></stop>
+            <stop offset="30%" stop-color="#0ed"></stop>
+            <stop offset="100%" stop-color="white"></stop>
+        </linearGradient>
+    </defs>
+    <g filter="url(#filter)">
+        <path d="M-30,0 Q30,5 60,5 Q80,5 80,0 T60,-5 Q30,-5 -30,0" fill="url(#gradient)"   ></path>
+    </g>
+</svg>

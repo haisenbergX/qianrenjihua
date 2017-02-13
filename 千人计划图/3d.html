@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        path {
+            fill: none;
+            stroke-linejoin: round;
+        }
+
+        .sphere,
+        .graticule {
+            stroke: #aaa;
+        }
+
+        .equator {
+            stroke: red;
+            stroke-width: 2px;
+        }
+        svg {
+            background: #eee;
+        }
+
+        .sphere {
+            fill: #fff;
+        }
+
+        .land {
+            fill: #000;
+        }
+
+        .boundary {
+            fill: none;
+            stroke: #fff;
+            stroke-linejoin: round;
+            stroke-linecap: round;
+            vector-effect: non-scaling-stroke;
+        }
+
+        .overlay {
+            fill: none;
+            pointer-events: all;
+        }
+    </style>
+</head>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="//d3js.org/topojson.v1.min.js"></script>
+<body>
+<script>
+    var width = 960,
+        height = 500;
+
+    /*var projection = interpolatedProjection(
+        d3.geo.orthographic()
+            .rotate([10, -10])
+            .center([-10, 10])
+            .scale(240)
+            .translate([width / 2, height / 2]),
+        d3.geo.equirectangular()
+            .scale(145)
+            .translate([width / 2, height / 2]));*/
+    var projection = d3.geo.equirectangular()
+        .scale(220)
+        .translate([width / 2 - 100, height / 2])
+        .precision(.3);
+
+    var projection2=  d3.geo.orthographic()
+        .scale(220)
+        .translate([width / 2 - 100, height / 2])
+        .precision(.3);
+
+    var path = d3.geo.path()
+        .projection(projection2);
+
+    var path2 = d3.geo.path()
+        .projection(projection);
+    var graticule = d3.geo.graticule();
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    /*svg.append("path")
+        .datum({type: "Sphere"})
+        .attr("class", "sphere")
+        .attr("d", path);*/
+
+/*    svg.append("path")
+        .datum(graticule)
+        .attr("class", "graticule")
+        .attr("d", path)
+        .transition()
+        .delay(1000)
+        .duration(5000)
+        .attr('d',path2);*/
+
+
+
+
+    d3.json("mapdata/globe.json", function(error, world) {
+        if (error) throw error;
+
+        /*g.append("path")
+            .datum({type: "Sphere"})
+            .attr("class", "sphere")
+            .attr("d", path);*/
+
+        svg.append("path")
+            .datum(topojson.merge(world, world.objects.countries.geometries))
+            .attr("class", "land")
+            .attr("d", path2)
+            .transition()
+            .delay(1000)
+            .duration(5000)
+            .attr('d',path);
+
+        /*g.append("path")
+            .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+            .attr("class", "boundary")
+            .attr("d", path);*/
+
+
+    });
+
+
+
+
+    svg.append("path")
+        .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
+        .attr("class", "equator")
+        .attr("d", path);
+
+    setTimeout(function (d, i) {
+        var velocity=.01;
+
+        d3.timer(function(elapsed) {
+            projection.rotate([velocity * elapsed, 0]);
+            d3.select('.land').attr('d',path);
+            /*console.log(elapsed);
+             if (elapsed > 200) t.stop();*/
+        });
+
+
+    },7000)
+    /*var feature = svg.selectAll("path");*/
+
+   /* animation();
+
+    function animation() {
+        debugger;
+        d3.select('.land').transition()
+            .duration(4000).attr('d',function (d, i) {
+            debugger;
+        })
+    }*/
+
+    /*function interpolatedProjection(a, b) {
+        debugger;
+        var projection = d3.geo.projection(raw).scale(1),
+            center = projection.center,
+            translate = projection.translate,
+            α;
+
+        function raw(λ, φ) {
+            var pa = a([λ *= 180 / Math.PI, φ *= 180 / Math.PI]), pb = b([λ, φ]);
+            return [(1 - α) * pa[0] + α * pb[0], (α - 1) * pa[1] - α * pb[1]];
+        }
+
+        projection.alpha = function(_) {
+            if (!arguments.length) return α;
+            α = +_;
+            var ca = a.center(), cb = b.center(),
+                ta = a.translate(), tb = b.translate();
+            center([(1 - α) * ca[0] + α * cb[0], (1 - α) * ca[1] + α * cb[1]]);
+            translate([(1 - α) * ta[0] + α * tb[0], (1 - α) * ta[1] + α * tb[1]]);
+            return projection;
+        };
+
+        delete projection.scale;
+        delete projection.translate;
+        delete projection.center;
+        return projection.alpha(0);
+    }*/
+
+</script>
+</body>
+</html>
